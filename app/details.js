@@ -1,29 +1,53 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 
 import Colors from "../constants/Colors";
+import { LikedProductsContext } from "../providers/LikedProductProvider";
 
 const DetailsScreen = () => {
-  const router = useRoute();
+  const route = useRoute();
   const toast = useToast();
 
-  const { product } = router.params;
-  const isLike = false;
+  const { product } = route.params;
+  const { likedProducts, setLikedProducts } = useContext(LikedProductsContext);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+  const isLike = likedProducts.includes(product.id.toString());
 
   const toggleDescription = () => {
     setIsDescriptionExpanded(!isDescriptionExpanded);
   };
 
-  const handleLikeProduct = () => {
-    toast.show("Like!", {
-      duration: 2000,
-      type: "success",
-      placement: "top",
-    });
+  const handleLikeProduct = async () => {
+    const productId = product.id.toString();
+
+    try {
+      let newLikedProducts = [...likedProducts];
+      if (isLike) {
+        newLikedProducts = newLikedProducts.filter((id) => id !== productId);
+      } else {
+        newLikedProducts.push(productId);
+      }
+      setLikedProducts(newLikedProducts);
+      await AsyncStorage.setItem("SE162107", JSON.stringify(newLikedProducts));
+      toast.show(isLike ? "Unliked!" : "Liked!", {
+        type: "success",
+      });
+    } catch (error) {
+      Alert.alert(error);
+    }
   };
 
   return (
@@ -42,7 +66,7 @@ const DetailsScreen = () => {
       <View style={styles.separator} />
 
       <Text style={styles.title}>{product.watchName}</Text>
-
+      <Text style={styles.price}>${product.price}</Text>
       <View style={styles.automatic}>
         <Text style={styles.automaticText}>Automatic </Text>
         {product.automatic ? (
@@ -61,8 +85,6 @@ const DetailsScreen = () => {
           {isDescriptionExpanded ? " See Less" : " See More"}
         </Text>
       </Text>
-
-      <Text style={styles.price}>${product.price}</Text>
     </View>
   );
 };
@@ -81,7 +103,6 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 18,
     fontWeight: "bold",
-    marginTop: "auto",
     color: Colors.light.defaultColor,
   },
   description: {

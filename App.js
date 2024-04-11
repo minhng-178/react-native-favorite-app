@@ -10,6 +10,7 @@ import MenuScreen from "./app/menu";
 import LoginScreen from "./app/login";
 import DetailsScreen from "./app/details";
 import FavoritesScreen from "./app/favorites";
+import LikedProductsProvider from "./providers/LikedProductProvider";
 
 export default function App() {
   const Tab = createBottomTabNavigator();
@@ -26,37 +27,39 @@ export default function App() {
 
   return (
     <>
-      <ToastProvider>
-        <NavigationContainer>
-          <Tab.Navigator
-            screenOptions={({ route }) => ({
-              tabBarIcon: ({ focused, color, size }) => {
-                let iconName;
+      <ToastProvider offset={50} placement='top' duration={2000}>
+        <LikedProductsProvider>
+          <NavigationContainer>
+            <Tab.Navigator
+              screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName;
 
-                if (route.name === "Welcome") {
-                  iconName = focused
-                    ? "information-circle"
-                    : "information-circle-outline";
-                } else if (route.name === "Home") {
-                  iconName = "home";
-                } else if (route.name === "Favorites") {
-                  iconName = "heart";
-                }
-                return <Ionicons name={iconName} size={size} color={color} />;
-              },
-              tabBarActiveTintColor: "tomato",
-              tabBarInactiveTintColor: "gray",
-            })}
-          >
-            <Tab.Screen
-              name='Home'
-              component={MainStack}
-              options={{ headerShown: false }}
-            />
-            <Tab.Screen name='Favorites' component={FavoritesScreen} />
-            <Tab.Screen name='Welcome' component={WelcomeScreen} />
-          </Tab.Navigator>
-        </NavigationContainer>
+                  if (route.name === "Welcome") {
+                    iconName = focused
+                      ? "information-circle"
+                      : "information-circle-outline";
+                  } else if (route.name === "Home") {
+                    iconName = "home";
+                  } else if (route.name === "Favorites") {
+                    iconName = "heart";
+                  }
+                  return <Ionicons name={iconName} size={size} color={color} />;
+                },
+                tabBarActiveTintColor: "tomato",
+                tabBarInactiveTintColor: "gray",
+              })}
+            >
+              <Tab.Screen
+                name='Home'
+                component={MainStack}
+                options={{ headerShown: false }}
+              />
+              <Tab.Screen name='Favorites' component={FavoritesScreen} />
+              <Tab.Screen name='Welcome' component={WelcomeScreen} />
+            </Tab.Navigator>
+          </NavigationContainer>
+        </LikedProductsProvider>
       </ToastProvider>
     </>
   );

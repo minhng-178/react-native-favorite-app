@@ -1,20 +1,24 @@
-import { View, Text, StyleSheet } from "react-native";
-import React from "react";
+import { useContext } from "react";
+import { FlatList } from "react-native";
+
+import watches from "../assets/data/watches";
+import FavoriteListItem from "../components/FavoriteListItem";
+import { LikedProductsContext } from "../providers/LikedProductProvider";
 
 const FavoritesScreen = () => {
+  const { likedProducts } = useContext(LikedProductsContext);
+
+  const favoriteProducts = watches.filter((watch) =>
+    likedProducts.includes(watch.id.toString())
+  );
+
   return (
-    <View style={styles.container}>
-      <Text>FavoriteScreen</Text>
-    </View>
+    <FlatList
+      data={favoriteProducts}
+      renderItem={({ item }) => <FavoriteListItem product={item} />}
+      contentContainerStyle={{ gap: 10, padding: 10 }}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
 
 export default FavoritesScreen;

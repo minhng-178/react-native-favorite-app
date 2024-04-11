@@ -5,27 +5,44 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
+import { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useToast } from "react-native-toast-notifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Colors from "../constants/Colors";
 import { defaultImage } from "../constants/Image";
+import { LikedProductsContext } from "../providers/LikedProductProvider";
 
-const ProductListItem = ({ product, navigation }) => {
-  const isLike = false;
+const ProductListItem = ({ product, navigation, isLike }) => {
   const toast = useToast();
+  const { setLikedProducts } = useContext(LikedProductsContext);
 
   const handleNavigationDetail = () => {
     navigation.navigate("Detail", { product: product });
   };
 
-  const handleLikeProduct = () => {
-    toast.show("Like!", {
-      duration: 2000,
-      type: "success",
-      placement: "top",
-    });
+  const handleLikeProduct = async () => {
+    const productId = product.id.toString();
+
+    try {
+      let likedProducts =
+        JSON.parse(await AsyncStorage.getItem("SE162107")) || [];
+      if (isLike) {
+        likedProducts = likedProducts.filter((id) => id !== productId);
+      } else {
+        likedProducts.push(productId);
+      }
+      setLikedProducts(likedProducts);
+      await AsyncStorage.setItem("SE162107", JSON.stringify(likedProducts));
+      toast.show(isLike ? "Unliked!" : "Liked!", {
+        type: "success",
+      });
+    } catch (error) {
+      Alert.alert(error);
+    }
   };
 
   return (
