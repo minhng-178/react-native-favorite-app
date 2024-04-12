@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -18,6 +19,8 @@ import { LikedProductsContext } from "../providers/LikedProductProvider";
 
 const ProductListItem = ({ product, navigation, isLike }) => {
   const toast = useToast();
+  const isFocused = useIsFocused();
+
   const { setLikedProducts } = useContext(LikedProductsContext);
 
   const handleNavigationDetail = () => {
@@ -49,7 +52,7 @@ const ProductListItem = ({ product, navigation, isLike }) => {
     <View style={styles.container}>
       <TouchableOpacity onPress={handleLikeProduct}>
         <View style={styles.icon}>
-          {isLike ? (
+          {isLike && isFocused ? (
             <Ionicons name='heart-sharp' size={24} color='red' />
           ) : (
             <Ionicons name='heart-outline' size={24} color='red' />

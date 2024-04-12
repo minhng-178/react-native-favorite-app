@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { View, Text, StyleSheet, Button, TextInput } from "react-native";
-import React from "react";
+
+import Colors from "../constants/Colors";
 
 const LoginScreen = ({ navigation }) => {
-  const [username, onChangeUsername] = React.useState("");
-  const [password, onChangePassword] = React.useState("");
+  const [username, onChangeUsername] = useState("");
+  const [password, onChangePassword] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -25,7 +29,7 @@ const LoginScreen = ({ navigation }) => {
       <Button
         title='Login'
         onPress={() => {
-          navigation.navigate("Welcome");
+          navigation.navigate("Home");
         }}
       />
     </View>
@@ -49,6 +53,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: "white",
     borderRadius: 5,
+  },
+  textButton: {
+    alignSelf: "center",
+    fontWeight: "bold",
+    color: Colors.light.tint,
+    marginVertical: 10,
   },
 });
 

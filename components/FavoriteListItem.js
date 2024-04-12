@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -9,11 +10,16 @@ import Colors from "../constants/Colors";
 import { LikedProductsContext } from "../providers/LikedProductProvider";
 
 const FavoriteListItem = ({ product }) => {
-  const { likedProducts, setLikedProducts } = useContext(LikedProductsContext);
   const toast = useToast();
+  const isFocused = useIsFocused();
+
+  const { likedProducts, setLikedProducts } = useContext(LikedProductsContext);
 
   const handleUnlikeProduct = async () => {
     const productId = product.id.toString();
+    if (!isFocused) {
+      return;
+    }
 
     try {
       const newLikedProducts = likedProducts.filter((id) => id !== productId);

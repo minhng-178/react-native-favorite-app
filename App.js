@@ -35,7 +35,7 @@ export default function App() {
                 tabBarIcon: ({ focused, color, size }) => {
                   let iconName;
 
-                  if (route.name === "Welcome") {
+                  if (route.name === "Login") {
                     iconName = focused
                       ? "information-circle"
                       : "information-circle-outline";
@@ -56,7 +56,7 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Tab.Screen name='Favorites' component={FavoritesScreen} />
-              <Tab.Screen name='Welcome' component={WelcomeScreen} />
+              <Tab.Screen name='Login' component={LoginScreen} />
             </Tab.Navigator>
           </NavigationContainer>
         </LikedProductsProvider>

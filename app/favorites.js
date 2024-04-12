@@ -1,5 +1,12 @@
-import { useContext } from "react";
-import { FlatList } from "react-native";
+import { useContext, useState, useEffect } from "react";
+
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import watches from "../assets/data/watches";
 import FavoriteListItem from "../components/FavoriteListItem";
@@ -7,10 +14,52 @@ import { LikedProductsContext } from "../providers/LikedProductProvider";
 
 const FavoritesScreen = () => {
   const { likedProducts } = useContext(LikedProductsContext);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   const favoriteProducts = watches.filter((watch) =>
     likedProducts.includes(watch.id.toString())
   );
+
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        setIsLoading(true);
+        setIsError(false);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      } catch (error) {
+        setIsError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadFavorites();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View style={styles.container}>
+        <Text>There was an error loading your favorites.</Text>;
+      </View>
+    );
+  }
+
+  if (favoriteProducts.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text>Please add your first product to favorites.</Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -20,5 +69,13 @@ const FavoritesScreen = () => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 export default FavoritesScreen;
