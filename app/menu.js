@@ -1,9 +1,12 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useContext, useEffect, useState } from "react";
+
 import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -15,15 +18,30 @@ import { LikedProductsContext } from "../providers/LikedProductProvider";
 
 const MenuScreen = ({ navigation }) => {
   const { likedProducts } = useContext(LikedProductsContext);
-  const [activeBrand, setActiveBrand] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
+  const [activeBrand, setActiveBrand] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredAndSearchedData, setFilteredAndSearchedData] = useState(data);
+
   const brands = [...new Set(data.map((item) => item.brandName))];
 
-  const filteredData = data.filter(
-    (item) => activeBrand === "" || item.brandName === activeBrand
-  );
+  useEffect(() => {
+    let result = data;
+
+    if (activeBrand !== "") {
+      result = result.filter((item) => item.brandName === activeBrand);
+    }
+
+    if (searchTerm !== "") {
+      result = result.filter((item) =>
+        item.watchName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredAndSearchedData(result);
+  }, [activeBrand, searchTerm]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -59,6 +77,21 @@ const MenuScreen = ({ navigation }) => {
 
   return (
     <View>
+      <View style={styles.searchContainer}>
+        <View style={styles.searchWrapper}>
+          <TextInput
+            style={styles.searchInput}
+            value={searchTerm}
+            onChangeText={(text) => setSearchTerm(text)}
+            placeholder='What are you looking for?'
+          />
+        </View>
+
+        <TouchableOpacity style={styles.searchBtn}>
+          <Ionicons name='search' color={"white"} size={24} />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.tabsContainer}>
         <FlatList
           data={brands}
@@ -84,7 +117,7 @@ const MenuScreen = ({ navigation }) => {
       </View>
 
       <FlatList
-        data={filteredData}
+        data={filteredAndSearchedData}
         numColumns={2}
         renderItem={({ item }) => (
           <ProductListItem
@@ -106,6 +139,36 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  searchContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: 20,
+    marginHorizontal: 10,
+    height: 50,
+  },
+  searchWrapper: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+    marginRight: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 16,
+    height: "100%",
+  },
+  searchInput: {
+    width: "100%",
+    height: "100%",
+    paddingHorizontal: 16,
+  },
+  searchBtn: {
+    width: 50,
+    height: "100%",
+    backgroundColor: Colors.light.defaultColor,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
   },
   tabsContainer: {
     width: "100%",
