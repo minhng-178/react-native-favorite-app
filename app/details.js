@@ -16,7 +16,9 @@ import {
 } from "react-native";
 
 import Colors from "../constants/Colors";
+
 import { LikedProductsContext } from "../providers/LikedProductProvider";
+import FeedbacksSection from "../components/FeedbacksSection";
 
 const DetailsScreen = () => {
   const route = useRoute();
@@ -82,13 +84,15 @@ const DetailsScreen = () => {
 
         <Text style={styles.description}>Description</Text>
         <Text>
-          {isDescriptionExpanded
+          {isDescriptionExpanded || !product.watchDescription
             ? product.watchDescription
             : `${product.watchDescription.substring(0, 100)}... `}
           <Text onPress={toggleDescription} style={styles.seeMore}>
             {isDescriptionExpanded ? " See Less" : " See More"}
           </Text>
         </Text>
+
+        <FeedbacksSection product={product} />
       </ScrollView>
     </View>
   );

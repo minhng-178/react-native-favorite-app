@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 
-import watches from "../assets/data/watches";
+import data from "../assets/data/db.json";
 import FavoriteListItem from "../components/FavoriteListItem";
 import { LikedProductsContext } from "../providers/LikedProductProvider";
 
@@ -17,7 +17,7 @@ const FavoritesScreen = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  const favoriteProducts = watches.filter((watch) =>
+  const favoriteProducts = data.filter((watch) =>
     likedProducts.includes(watch.id.toString())
   );
 
