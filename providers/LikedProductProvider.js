@@ -19,8 +19,35 @@ const LikedProductsProvider = ({ children }) => {
     fetchLikedProducts();
   }, []);
 
+  const addProductToLikes = async (productId) => {
+    const newLikedProducts = [...likedProducts, productId];
+    setLikedProducts(newLikedProducts);
+    await AsyncStorage.setItem("SE162107", JSON.stringify(newLikedProducts));
+  };
+
+  const removeProductFromLikes = async (productId) => {
+    const newLikedProducts = likedProducts.filter((id) => id !== productId);
+    setLikedProducts(newLikedProducts);
+    await AsyncStorage.setItem("SE162107", JSON.stringify(newLikedProducts));
+  };
+
+  const removeMultipleProductsFromLikes = async (productIds) => {
+    const newLikedProducts = likedProducts.filter(
+      (id) => !productIds.includes(id)
+    );
+    setLikedProducts(newLikedProducts);
+    await AsyncStorage.setItem("SE162107", JSON.stringify(newLikedProducts));
+  };
+
   return (
-    <LikedProductsContext.Provider value={{ likedProducts, setLikedProducts }}>
+    <LikedProductsContext.Provider
+      value={{
+        likedProducts,
+        addProductToLikes,
+        removeProductFromLikes,
+        removeMultipleProductsFromLikes,
+      }}
+    >
       {children}
     </LikedProductsContext.Provider>
   );

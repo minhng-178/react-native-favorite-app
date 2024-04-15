@@ -1,40 +1,28 @@
-import { useContext } from "react";
+import Checkbox from "expo-checkbox";
 import { Ionicons } from "@expo/vector-icons";
-import { useIsFocused } from "@react-navigation/native";
-import { useToast } from "react-native-toast-notifications";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { View, Text, StyleSheet, Pressable, Image, Alert } from "react-native";
+import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 
 import Colors from "../constants/Colors";
-import { LikedProductsContext } from "../providers/LikedProductProvider";
 
-const FavoriteListItem = ({ product }) => {
-  const toast = useToast();
-  const isFocused = useIsFocused();
+const FavoriteListItem = ({ product, isChecked, onCheck, navigation }) => {
+  const handleCheckChange = (isChecked) => {
+    onCheck(product.id, isChecked);
+  };
 
-  const { likedProducts, setLikedProducts } = useContext(LikedProductsContext);
-
-  const handleUnlikeProduct = async () => {
-    const productId = product.id.toString();
-    if (!isFocused) {
-      return;
-    }
-
-    try {
-      const newLikedProducts = likedProducts.filter((id) => id !== productId);
-      setLikedProducts(newLikedProducts);
-      await AsyncStorage.setItem("SE162107", JSON.stringify(newLikedProducts));
-      toast.show("Unliked!", {
-        type: "success",
-      });
-    } catch (error) {
-      Alert.alert("Error", error.message);
-    }
+  const handleNavigationDetail = () => {
+    navigation.navigate("Detail", { product: product });
   };
 
   return (
-    <Pressable style={styles.container}>
+    <Pressable style={styles.container} onPress={handleNavigationDetail}>
+      <Checkbox
+        style={styles.checkbox}
+        color={Colors.light.defaultColor}
+        value={isChecked}
+        onValueChange={handleCheckChange}
+      />
+
       <Image
         source={{ uri: product.image }}
         style={styles.image}
@@ -47,12 +35,7 @@ const FavoriteListItem = ({ product }) => {
           </Text>
           <Text style={styles.price}>${product.price}</Text>
         </View>
-        <Ionicons
-          name='heart'
-          size={24}
-          color='red'
-          onPress={handleUnlikeProduct}
-        />
+        <Ionicons name='heart' size={24} color='red' />
       </View>
     </Pressable>
   );
@@ -89,6 +72,9 @@ const styles = StyleSheet.create({
   price: {
     fontSize: 16,
     color: Colors.light.defaultColor,
+  },
+  checkbox: {
+    margin: 8,
   },
 });
 

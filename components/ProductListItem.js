@@ -11,7 +11,6 @@ import { useContext } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useIsFocused } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Colors from "../constants/Colors";
 import { defaultImage } from "../constants/Image";
@@ -21,7 +20,8 @@ const ProductListItem = ({ product, navigation, isLike }) => {
   const toast = useToast();
   const isFocused = useIsFocused();
 
-  const { setLikedProducts } = useContext(LikedProductsContext);
+  const { addProductToLikes, removeProductFromLikes } =
+    useContext(LikedProductsContext);
 
   const handleNavigationDetail = () => {
     navigation.navigate("Detail", { product: product });
@@ -31,20 +31,16 @@ const ProductListItem = ({ product, navigation, isLike }) => {
     const productId = product.id.toString();
 
     try {
-      let likedProducts =
-        JSON.parse(await AsyncStorage.getItem("SE162107")) || [];
       if (isLike) {
-        likedProducts = likedProducts.filter((id) => id !== productId);
+        await removeProductFromLikes(productId);
       } else {
-        likedProducts.push(productId);
+        await addProductToLikes(productId);
       }
-      setLikedProducts(likedProducts);
-      await AsyncStorage.setItem("SE162107", JSON.stringify(likedProducts));
       toast.show(isLike ? "Unliked!" : "Liked!", {
         type: "success",
       });
     } catch (error) {
-      Alert.alert(error);
+      Alert.alert("Error", error.message);
     }
   };
 

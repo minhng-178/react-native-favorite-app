@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useContext, useEffect, useState } from "react";
 
 import {
-  ActivityIndicator,
   FlatList,
   StyleSheet,
   Text,
@@ -18,9 +17,6 @@ import { LikedProductsContext } from "../providers/LikedProductProvider";
 
 const MenuScreen = ({ navigation }) => {
   const { likedProducts } = useContext(LikedProductsContext);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-
   const [activeBrand, setActiveBrand] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredAndSearchedData, setFilteredAndSearchedData] = useState(data);
@@ -42,38 +38,6 @@ const MenuScreen = ({ navigation }) => {
 
     setFilteredAndSearchedData(result);
   }, [activeBrand, searchTerm]);
-
-  useEffect(() => {
-    const loadProduct = async () => {
-      try {
-        setIsLoading(true);
-        setIsError(false);
-        await new Promise((resolve) => setTimeout(resolve, 500));
-      } catch (error) {
-        setIsError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadProduct();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={styles.container}>
-        <Text>There was an error loading your products.</Text>;
-      </View>
-    );
-  }
 
   return (
     <View>
@@ -127,7 +91,7 @@ const MenuScreen = ({ navigation }) => {
             isLike={likedProducts.includes(item.id.toString())}
           />
         )}
-        contentContainerStyle={{ gap: 10, padding: 10 }}
+        contentContainerStyle={{ gap: 10, padding: 10, paddingBottom: 140 }}
         columnWrapperStyle={{ gap: 10 }}
       />
     </View>
@@ -171,7 +135,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tabsContainer: {
-    width: "100%",
     margin: 10,
   },
   tab: (activeBrand, item) => ({

@@ -3,7 +3,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import { useIsFocused } from "@react-navigation/native";
 import { useToast } from "react-native-toast-notifications";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import {
   View,
@@ -17,8 +16,8 @@ import {
 
 import Colors from "../constants/Colors";
 
-import { LikedProductsContext } from "../providers/LikedProductProvider";
 import FeedbacksSection from "../components/FeedbacksSection";
+import { LikedProductsContext } from "../providers/LikedProductProvider";
 
 const DetailsScreen = () => {
   const route = useRoute();
@@ -26,10 +25,11 @@ const DetailsScreen = () => {
   const isFocused = useIsFocused();
 
   const { product } = route.params;
-  const { likedProducts, setLikedProducts } = useContext(LikedProductsContext);
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-
+  const { likedProducts, addProductToLikes, removeProductFromLikes } =
+    useContext(LikedProductsContext);
   const isLike = likedProducts.includes(product.id.toString());
+
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const toggleDescription = () => {
     setIsDescriptionExpanded(!isDescriptionExpanded);
@@ -39,19 +39,16 @@ const DetailsScreen = () => {
     const productId = product.id.toString();
 
     try {
-      let newLikedProducts = [...likedProducts];
       if (isLike) {
-        newLikedProducts = newLikedProducts.filter((id) => id !== productId);
+        await removeProductFromLikes(productId);
       } else {
-        newLikedProducts.push(productId);
+        await addProductToLikes(productId);
       }
-      setLikedProducts(newLikedProducts);
-      await AsyncStorage.setItem("SE162107", JSON.stringify(newLikedProducts));
       toast.show(isLike ? "Unliked!" : "Liked!", {
         type: "success",
       });
     } catch (error) {
-      Alert.alert(error);
+      Alert.alert("Error", error.message);
     }
   };
 
