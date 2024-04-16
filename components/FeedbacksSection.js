@@ -1,15 +1,12 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Rating } from "react-native-ratings";
-import RBSheet from "react-native-raw-bottom-sheet";
-
-import { View, Text, StyleSheet, Button } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { View, Text, StyleSheet } from "react-native";
 
 import FeedbackListItem from "./FeedbackListItem";
 
 const FeedbacksSection = ({ product }) => {
   const feedbacks = product.feedbacks;
-
-  const refRBSheet = useRef();
 
   const [selectedStars, setSelectedStars] = useState(0);
 
@@ -25,6 +22,18 @@ const FeedbacksSection = ({ product }) => {
   const filteredFeedbacks = feedbacks.filter(
     (feedback) => selectedStars === 0 || feedback.rating === selectedStars
   );
+
+  const countFeedbacksPerStar = (feedbacks) => {
+    let starCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+    feedbacks.forEach((feedback) => {
+      starCounts[feedback.rating]++;
+    });
+
+    return starCounts;
+  };
+
+  const starCounts = countFeedbacksPerStar(feedbacks);
 
   return (
     <View>
@@ -43,35 +52,18 @@ const FeedbacksSection = ({ product }) => {
         />
       </View>
 
-      <View style={{ flex: 1 }}>
-        <Button
-          title='OPEN BOTTOM SHEET'
-          onPress={() => refRBSheet.current.open()}
-        />
-        <RBSheet
-          ref={refRBSheet}
-          useNativeDriver={true}
-          customStyles={{
-            wrapper: {
-              backgroundColor: "transparent",
-            },
-            draggableIcon: {
-              backgroundColor: "#000",
-            },
-          }}
-          customModalProps={{
-            animationType: "slide",
-            statusBarTranslucent: true,
-          }}
-          customAvoidingViewProps={{
-            enabled: false,
-          }}
-        >
-          <View>
-            <Text>Hi</Text>
-          </View>
-        </RBSheet>
-      </View>
+      <Text style={styles.averageRating}>Filter by Star Ratings:</Text>
+      <Picker
+        selectedValue={selectedStars}
+        onValueChange={(itemValue, itemIndex) => setSelectedStars(itemValue)}
+      >
+        <Picker.Item label='See all' value={0} />
+        <Picker.Item label={`1 Star (${starCounts[1]})`} value={1} />
+        <Picker.Item label={`2 Stars (${starCounts[2]})`} value={2} />
+        <Picker.Item label={`3 Stars (${starCounts[3]})`} value={3} />
+        <Picker.Item label={`4 Stars (${starCounts[4]})`} value={4} />
+        <Picker.Item label={`5 Stars (${starCounts[5]})`} value={5} />
+      </Picker>
 
       <View style={styles.feedbacksContainer}>
         {totalFeedbacks > 0 ? (
