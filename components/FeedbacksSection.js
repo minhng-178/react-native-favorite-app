@@ -6,11 +6,11 @@ import { View, Text, StyleSheet } from "react-native";
 import FeedbackListItem from "./FeedbackListItem";
 
 const FeedbacksSection = ({ product }) => {
-  const feedbacks = product.feedbacks;
-
   const [selectedStars, setSelectedStars] = useState(0);
 
-  const totalFeedbacks = feedbacks ? feedbacks.length : 0;
+  const feedbacks = product && product.feedbacks ? product.feedbacks : [];
+
+  const totalFeedbacks = feedbacks.length;
 
   let averageRating = 0;
   if (totalFeedbacks > 0) {
@@ -43,7 +43,9 @@ const FeedbacksSection = ({ product }) => {
         Total Feedbacks: {totalFeedbacks}
       </Text>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Text style={styles.averageRating}>Average Rating:</Text>
+        <Text style={styles.averageRating}>
+          Average Rating: ({averageRating.toFixed(2)})
+        </Text>
         <Rating
           imageSize={20}
           readonly
